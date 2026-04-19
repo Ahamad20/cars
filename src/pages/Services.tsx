@@ -311,12 +311,23 @@ export default function Services() {
                       <Text fontSize="lg" color="gray.600" mb={6}>
                         {serviceTabs[label as ServiceTab].description}
                       </Text>
-                      <Flex gap={4} alignItems="center">
-                        <Button colorScheme="purple" variant="outline" size="lg" onClick={handlePrev}>
-                          ← Previous
+                      <Flex gap={2} alignItems="center" direction={{ base: 'column', md: 'row' }} w="full">
+                        <Button 
+                          colorScheme="purple" 
+                          variant="outline" 
+                          size={{ base: 'md', md: 'lg' }} 
+                          onClick={handlePrev}
+                          w={{ base: 'full', md: 'auto' }}
+                        >
+                          ← <Text display={{ base: 'none', md: 'inline' }} ml={2}>Previous</Text>
                         </Button>
-                        <Button colorScheme="purple" size="lg" onClick={handleNext}>
-                          Next Image →
+                        <Button 
+                          colorScheme="purple"  
+                          size={{ base: 'md', md: 'lg' }} 
+                          onClick={handleNext}
+                          w={{ base: 'full', md: 'auto' }}
+                        >
+                          <Text display={{ base: 'none', md: 'inline' }} mr={2}>Next</Text> →
                         </Button>
                       </Flex>
                     </Box>
