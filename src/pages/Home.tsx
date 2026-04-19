@@ -1,11 +1,46 @@
 import { Link as RouterLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Box, Container, Heading, Text, Button, Grid, HStack } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { Box, Container, Heading, Text, Button, Grid, HStack, Image } from '@chakra-ui/react';
 
 const MotionBox = motion(Box);
 const MotionButton = motion(Button);
+const heroBackground = new URL('../assets/washing/home1.webp', import.meta.url).href;
+
+type UploadedImage = {
+  id: string;
+  name: string;
+  src: string;
+  category: 'services' | 'products';
+  subcategory: string;
+};
+
+type CategorizedImages = {
+  services: {
+    'Wheel Alignment': UploadedImage[];
+    'Car Washing': UploadedImage[];
+    'Tyres': UploadedImage[];
+  };
+  products: UploadedImage[];
+};
 
 export default function Home() {
+  const [uploadedImages, setUploadedImages] = useState<CategorizedImages | null>(null);
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem('adminCategorizedImages');
+    if (stored) {
+      setUploadedImages(JSON.parse(stored));
+    }
+  }, []);
+
+  const uploadedCards = uploadedImages
+    ? [
+        ...Object.values(uploadedImages.services).flat(),
+        ...uploadedImages.products,
+      ]
+    : [];
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -41,40 +76,14 @@ export default function Home() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         style={{
-          background: 'linear-gradient(135deg, #4f46e5 0%, #9333ea 50%, #ec4899 100%)',
+          backgroundImage: `url(${heroBackground})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
         borderRadius={{ base: 'md', md: 'xl' }}
         boxShadow="0 20px 50px rgba(0, 0, 0, 0.3)"
       >
-        {/* Animated Background Decorations */}
-        <motion.div
-          style={{
-            position: 'absolute',
-            width: '300px',
-            height: '300px',
-            background: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: '50%',
-            top: '-50px',
-            right: '-50px',
-            backdropFilter: 'blur(10px)',
-          }}
-          animate={{ y: [0, -30, 0] }}
-          transition={{ duration: 6, repeat: Infinity }}
-        />
-        <motion.div
-          style={{
-            position: 'absolute',
-            width: '200px',
-            height: '200px',
-            background: 'rgba(255, 255, 255, 0.15)',
-            borderRadius: '50%',
-            bottom: '-30px',
-            left: '10%',
-            backdropFilter: 'blur(10px)',
-          }}
-          animate={{ y: [0, 20, 0] }}
-          transition={{ duration: 7, repeat: Infinity, delay: 0.5 }}
-        />
 
         <Container maxW="7xl" position="relative" zIndex={1}>
           <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={8} alignItems="center">
@@ -89,13 +98,14 @@ export default function Home() {
                   size="2xl"
                   mb={4}
                   color="white"
-                  textShadow="0 2px 10px rgba(0, 0, 0, 0.3)"
+                  textShadow="0 4px 25px rgba(0, 0, 0, 0.9), 0 2px 12px rgba(0, 0, 0, 0.8), 0 1px 6px rgba(0, 0, 0, 0.7)"
+                  fontWeight="bold"
                 >
                   Transform Your Car
                 </Heading>
               </motion.div>
               <motion.div variants={itemVariants}>
-                <Text fontSize="lg" color="rgba(255, 255, 255, 0.95)" mb={8} lineHeight="1.8">
+                <Text fontSize="lg" color="white" mb={8} lineHeight="1.8" textShadow="0 3px 15px rgba(0, 0, 0, 0.8), 0 1px 8px rgba(0, 0, 0, 0.7)">
                   Premium car decorations and professional services to make your vehicle stand out.
                 </Text>
               </motion.div>
@@ -216,6 +226,52 @@ export default function Home() {
           </Grid>
         </Container>
       </MotionBox>
+
+      {uploadedCards.length > 0 && (
+        <MotionBox
+          py={{ base: 10, md: 16 }}
+          px={{ base: 4, md: 0 }}
+          bg="white"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          <Container maxW="7xl">
+            <motion.div variants={itemVariants}>
+              <Heading as="h2" size="xl" mb={12} bgGradient="linear(to-r, #4f46e5, #9333ea)" bgClip="text">
+                Recent Uploads
+              </Heading>
+            </motion.div>
+
+            <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={6} mb={10}>
+              {uploadedCards.slice(0, 6).map((image) => (
+                <motion.div key={image.id} variants={itemVariants}>
+                  <MotionBox
+                    bg="gray.50"
+                    borderRadius="xl"
+                    overflow="hidden"
+                    boxShadow="0 10px 25px rgba(0, 0, 0, 0.08)"
+                    whileHover={{ y: -5 }}
+                  >
+                    <Image src={image.src} alt={image.name} objectFit="cover" w="full" h="220px" />
+                    <Box p={6}>
+                      <Heading as="h3" size="md" mb={2} color="gray.800">
+                        {image.name}
+                      </Heading>
+                      <Text color="gray.600" fontSize="sm">
+                        {image.category === 'services'
+                          ? `${image.subcategory} Service Upload`
+                          : 'Product Upload'}
+                      </Text>
+                    </Box>
+                  </MotionBox>
+                </motion.div>
+              ))}
+            </Grid>
+          </Container>
+        </MotionBox>
+      )}
 
       {/* Featured Products Section */}
       <MotionBox

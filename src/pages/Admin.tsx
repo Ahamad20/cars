@@ -265,217 +265,123 @@ export default function Admin() {
                   <Tab fontWeight="bold" _selected={{ bg: 'purple.500', color: 'white' }}>
                     📤 Upload Images
                   </Tab>
-                  <Tab fontWeight="bold" _selected={{ bg: 'purple.500', color: 'white' }}>
-                    🔧 Services ({Object.values(categorizedImages.services).flat().length})
-                  </Tab>
-                  <Tab fontWeight="bold" _selected={{ bg: 'purple.500', color: 'white' }}>
-                    🛍️ Products ({categorizedImages.products.length})
-                  </Tab>
                 </TabList>
 
                 <TabPanels>
-                  {/* Upload Tab */}
                   <TabPanel>
                     <Box bg={sectionBg} p={{ base: 6, md: 8 }} borderRadius="2xl">
                       <Stack spacing={5}>
-                  <FormControl>
-                    <FormLabel>Select Category</FormLabel>
-                    <Select
-                      value={selectedCategory}
-                      onChange={(e) => {
-                        setSelectedCategory(e.target.value as 'services' | 'products');
-                        if (e.target.value === 'products') {
-                          setSelectedSubcategory('Products');
-                        } else {
-                          setSelectedSubcategory('Wheel Alignment');
-                        }
-                      }}
-                    >
-                      <option value="services">Services</option>
-                      <option value="products">Products</option>
-                    </Select>
-                  </FormControl>
+                        <FormControl>
+                          <FormLabel>Select Category</FormLabel>
+                          <Select
+                            value={selectedCategory}
+                            onChange={(e) => {
+                              setSelectedCategory(e.target.value as 'services' | 'products');
+                              if (e.target.value === 'products') {
+                                setSelectedSubcategory('Products');
+                              } else {
+                                setSelectedSubcategory('Wheel Alignment');
+                              }
+                            }}
+                          >
+                            <option value="services">Services</option>
+                            <option value="products">Products</option>
+                          </Select>
+                        </FormControl>
 
-                  {selectedCategory === 'services' && (
-                    <FormControl>
-                      <FormLabel>Select Service Type</FormLabel>
-                      <Select
-                        value={selectedSubcategory}
-                        onChange={(e) => setSelectedSubcategory(e.target.value)}
-                      >
-                        <option value="Wheel Alignment">Wheel Alignment</option>
-                        <option value="Car Washing">Car Washing</option>
-                        <option value="Tyres">Tyres</option>
-                      </Select>
-                    </FormControl>
-                  )}
+                        {selectedCategory === 'services' && (
+                          <FormControl>
+                            <FormLabel>Select Service Type</FormLabel>
+                            <Select
+                              value={selectedSubcategory}
+                              onChange={(e) => setSelectedSubcategory(e.target.value)}
+                            >
+                              <option value="Wheel Alignment">Wheel Alignment</option>
+                              <option value="Car Washing">Car Washing</option>
+                              <option value="Tyres">Tyres</option>
+                            </Select>
+                          </FormControl>
+                        )}
 
-                  <FormControl>
-                    <FormLabel>Upload photos from phone</FormLabel>
-                    <Flex gap={3} direction={{ base: 'column', md: 'row' }} align="flex-start">
-                      <Button
-                        colorScheme="purple"
-                        onClick={() => fileInputRef.current?.click()}
-                        size="lg"
-                        isDisabled={isUploading}
-                      >
-                        {isUploading ? 'Uploading...' : 'Upload from Phone'}
-                      </Button>
-                      <Text color="gray.500">Supports camera access on mobile devices.</Text>
-                    </Flex>
-                    <Input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      display="none"
-                      onChange={handleFileChange}
-                    />
-                  </FormControl>
+                        <FormControl>
+                          <FormLabel>Upload photos from phone</FormLabel>
+                          <Flex gap={3} direction={{ base: 'column', md: 'row' }} align="flex-start">
+                            <Button
+                              colorScheme="purple"
+                              onClick={() => fileInputRef.current?.click()}
+                              size="lg"
+                              isDisabled={isUploading}
+                            >
+                              {isUploading ? 'Uploading...' : 'Upload from Phone'}
+                            </Button>
+                            <Text color="gray.500">Supports camera access on mobile devices.</Text>
+                          </Flex>
+                          <Input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            display="none"
+                            onChange={handleFileChange}
+                          />
+                        </FormControl>
 
-                  {/* Display uploaded images for current selection */}
-                  <Box mt={6}>
-                    <Heading size="sm" mb={4}>
-                      {selectedCategory === 'services' 
-                        ? `Uploaded ${selectedSubcategory} Images` 
-                        : 'Uploaded Product Images'
-                      }
-                    </Heading>
-                    {selectedCategory === 'services' && categorizedImages.services[selectedSubcategory as keyof typeof categorizedImages.services].length > 0 ? (
-                      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={4}>
-                        {categorizedImages.services[selectedSubcategory as keyof typeof categorizedImages.services].map((image) => (
-                          <Box key={image.id} bg="white" borderRadius="2xl" overflow="hidden" border="1px solid" borderColor="gray.200">
-                            <Image src={image.src} alt={image.name} objectFit="cover" w="full" h="200px" />
-                            <Flex p={3} justify="space-between" align="center">
-                              <Text fontSize="sm" fontWeight="semibold" noOfLines={1}>
-                                {image.name}
-                              </Text>
-                              <Button
-                                size="sm"
-                                onClick={() => handleRemoveImage('services', selectedSubcategory, image.id)}
-                                variant="ghost"
-                                colorScheme="red"
-                              >
-                                Remove
-                              </Button>
-                            </Flex>
-                          </Box>
-                        ))}
-                      </SimpleGrid>
-                    ) : selectedCategory === 'products' && categorizedImages.products.length > 0 ? (
-                      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={4}>
-                        {categorizedImages.products.map((image) => (
-                          <Box key={image.id} bg="white" borderRadius="2xl" overflow="hidden" border="1px solid" borderColor="gray.200">
-                            <Image src={image.src} alt={image.name} objectFit="cover" w="full" h="200px" />
-                            <Flex p={3} justify="space-between" align="center">
-                              <Text fontSize="sm" fontWeight="semibold" noOfLines={1}>
-                                {image.name}
-                              </Text>
-                              <Button
-                                size="sm"
-                                onClick={() => handleRemoveImage('products', 'Products', image.id)}
-                                variant="ghost"
-                                colorScheme="red"
-                              >
-                                Remove
-                              </Button>
-                            </Flex>
-                          </Box>
-                        ))}
-                      </SimpleGrid>
-                    ) : (
-                      <Text color="gray.500" textAlign="center" py={8}>
-                        No images uploaded for {selectedCategory === 'services' ? selectedSubcategory : 'products'} yet.
-                      </Text>
-                    )}
-                  </Box>
-
-                </Stack>
-              </Box>
-            </TabPanel>
-
-                  {/* Services Tab */}
-                  <TabPanel>
-                    <Box bg={sectionBg} p={{ base: 6, md: 8 }} borderRadius="2xl">
-                      <Heading size="md" mb={6}>Uploaded Service Images</Heading>
-                      {Object.keys(categorizedImages.services).some(key => categorizedImages.services[key as keyof typeof categorizedImages.services].length > 0) ? (
-                        <Tabs isFitted variant="soft-rounded" colorScheme="blue" size="sm">
-                          <TabList mb={6} gap={2} flexWrap="wrap">
-                            {Object.entries(categorizedImages.services).map(([serviceType, images]) => (
-                              images.length > 0 && (
-                                <Tab key={serviceType} fontWeight="semibold">
-                                  {serviceType} ({images.length})
-                                </Tab>
-                              )
-                            ))}
-                          </TabList>
-                          <TabPanels>
-                            {Object.entries(categorizedImages.services).map(([serviceType, images]) => (
-                              images.length > 0 && (
-                                <TabPanel key={serviceType}>
-                                  <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={4}>
-                                    {images.map((image) => (
-                                      <Box key={image.id} bg="white" borderRadius="2xl" overflow="hidden" border="1px solid" borderColor="gray.200">
-                                        <Image src={image.src} alt={image.name} objectFit="cover" w="full" h="200px" />
-                                        <Flex p={3} justify="space-between" align="center">
-                                          <Text fontSize="sm" fontWeight="semibold" noOfLines={1}>
-                                            {image.name}
-                                          </Text>
-                                          <Button
-                                            size="sm"
-                                            onClick={() => handleRemoveImage('services', serviceType, image.id)}
-                                            variant="ghost"
-                                            colorScheme="red"
-                                          >
-                                            Remove
-                                          </Button>
-                                        </Flex>
-                                      </Box>
-                                    ))}
-                                  </SimpleGrid>
-                                </TabPanel>
-                              )
-                            ))}
-                          </TabPanels>
-                        </Tabs>
-                      ) : (
-                        <Text color="gray.500" textAlign="center" py={8}>
-                          No service images uploaded yet. Switch to the Upload tab to add images.
-                        </Text>
-                      )}
-                    </Box>
-                  </TabPanel>
-
-                  {/* Products Tab */}
-                  <TabPanel>
-                    <Box bg={sectionBg} p={{ base: 6, md: 8 }} borderRadius="2xl">
-                      <Heading size="md" mb={6}>Uploaded Product Images</Heading>
-                      {categorizedImages.products.length > 0 ? (
-                        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={4}>
-                          {categorizedImages.products.map((image) => (
-                            <Box key={image.id} bg="white" borderRadius="2xl" overflow="hidden" border="1px solid" borderColor="gray.200">
-                              <Image src={image.src} alt={image.name} objectFit="cover" w="full" h="200px" />
-                              <Flex p={3} justify="space-between" align="center">
-                                <Text fontSize="sm" fontWeight="semibold" noOfLines={1}>
-                                  {image.name}
-                                </Text>
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleRemoveImage('products', 'Products', image.id)}
-                                  variant="ghost"
-                                  colorScheme="red"
-                                >
-                                  Remove
-                                </Button>
-                              </Flex>
-                            </Box>
-                          ))}
-                        </SimpleGrid>
-                      ) : (
-                        <Text color="gray.500" textAlign="center" py={8}>
-                          No product images uploaded yet. Switch to the Upload tab to add images.
-                        </Text>
-                      )}
+                        <Box mt={6}>
+                          <Heading size="sm" mb={4}>
+                            {selectedCategory === 'services'
+                              ? `Uploaded ${selectedSubcategory} Images`
+                              : 'Uploaded Product Images'
+                            }
+                          </Heading>
+                          {selectedCategory === 'services' && categorizedImages.services[selectedSubcategory as keyof typeof categorizedImages.services].length > 0 ? (
+                            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={4}>
+                              {categorizedImages.services[selectedSubcategory as keyof typeof categorizedImages.services].map((image) => (
+                                <Box key={image.id} bg="white" borderRadius="2xl" overflow="hidden" border="1px solid" borderColor="gray.200">
+                                  <Image src={image.src} alt={image.name} objectFit="cover" w="full" h="200px" />
+                                  <Flex p={3} justify="space-between" align="center">
+                                    <Text fontSize="sm" fontWeight="semibold" noOfLines={1}>
+                                      {image.name}
+                                    </Text>
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleRemoveImage('services', selectedSubcategory, image.id)}
+                                      variant="ghost"
+                                      colorScheme="red"
+                                    >
+                                      Remove
+                                    </Button>
+                                  </Flex>
+                                </Box>
+                              ))}
+                            </SimpleGrid>
+                          ) : selectedCategory === 'products' && categorizedImages.products.length > 0 ? (
+                            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={4}>
+                              {categorizedImages.products.map((image) => (
+                                <Box key={image.id} bg="white" borderRadius="2xl" overflow="hidden" border="1px solid" borderColor="gray.200">
+                                  <Image src={image.src} alt={image.name} objectFit="cover" w="full" h="200px" />
+                                  <Flex p={3} justify="space-between" align="center">
+                                    <Text fontSize="sm" fontWeight="semibold" noOfLines={1}>
+                                      {image.name}
+                                    </Text>
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleRemoveImage('products', 'Products', image.id)}
+                                      variant="ghost"
+                                      colorScheme="red"
+                                    >
+                                      Remove
+                                    </Button>
+                                  </Flex>
+                                </Box>
+                              ))}
+                            </SimpleGrid>
+                          ) : (
+                            <Text color="gray.500" textAlign="center" py={8}>
+                              No images uploaded for {selectedCategory === 'services' ? selectedSubcategory : 'products'} yet.
+                            </Text>
+                          )}
+                        </Box>
+                      </Stack>
                     </Box>
                   </TabPanel>
                 </TabPanels>
